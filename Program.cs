@@ -73,8 +73,9 @@ namespace ATM
         }
         class Admin : User
         {
-            public Admin(string input_login, int input_pin, string input_name, double input_balance, int input_account_number, string input_status) : 
-            base(input_login, input_pin, input_name, input_balance, input_account_number, input_status){}
+            public Admin(string input_login, int input_pin, string input_name, double input_balance, int input_account_number, string input_status) :
+            base(input_login, input_pin, input_name, input_balance, input_account_number, input_status)
+            { }
             public override void DisplayMenu()
             {
                 Console.WriteLine("1----Create New Account");
@@ -120,28 +121,35 @@ namespace ATM
                 Console.Write("Input new account status: ");
                 var input_status = Console.ReadLine();
 
-                var conn = Connect();
-
-                var cmd = new MySql.Data.MySqlClient.MySqlCommand();
-                cmd.Connection = conn;
-                cmd.CommandType = CommandType.Text;
-
-                cmd.CommandText = "insert into atm.users(login, pin, name, balance, status) values(@login, @pin, @name, @balance, @status)";
-                cmd.Parameters.AddWithValue("@login", input_login);
-                cmd.Parameters.AddWithValue("@pin", input_pin);
-                cmd.Parameters.AddWithValue("@name", input_name);
-                cmd.Parameters.AddWithValue("@balance", input_balance);
-                cmd.Parameters.AddWithValue("@status", input_status);
-
-                var rows = cmd.ExecuteNonQuery();
-                if(rows > 0)
+                if (input_pin.Length != 5)
                 {
-                    User new_account = RetrieveAccountByLogin(input_login, Convert.ToInt32(input_pin));
-                    Console.WriteLine("Account Successfully Created - the account number assigned is: " + new_account.GetAccountNumber());
+                    Console.WriteLine("Pin is not 5 digits and is invalid...");
                 }
                 else
                 {
-                    Console.WriteLine("New account creation failed...");
+                    var conn = Connect();
+
+                    var cmd = new MySql.Data.MySqlClient.MySqlCommand();
+                    cmd.Connection = conn;
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.CommandText = "insert into atm.users(login, pin, name, balance, status) values(@login, @pin, @name, @balance, @status)";
+                    cmd.Parameters.AddWithValue("@login", input_login);
+                    cmd.Parameters.AddWithValue("@pin", input_pin);
+                    cmd.Parameters.AddWithValue("@name", input_name);
+                    cmd.Parameters.AddWithValue("@balance", input_balance);
+                    cmd.Parameters.AddWithValue("@status", input_status);
+
+                    var rows = cmd.ExecuteNonQuery();
+                    if (rows > 0)
+                    {
+                        User new_account = RetrieveAccountByLogin(input_login, Convert.ToInt32(input_pin));
+                        Console.WriteLine("Account Successfully Created - the account number assigned is: " + new_account.GetAccountNumber());
+                    }
+                    else
+                    {
+                        Console.WriteLine("New account creation failed...");
+                    }
                 }
             }
 
@@ -151,17 +159,17 @@ namespace ATM
                 var input_account_number = Convert.ToInt32(Console.ReadLine());
                 User user = RetrieveAccountByNumber(input_account_number);
 
-                if(user == null)
+                if (user == null)
                 {
                     Console.WriteLine("Account with that number not found...");
                 }
                 else
                 {
-                    Console.Write("You wish to delete the account held by " + user.GetAccountName() + 
+                    Console.Write("You wish to delete the account held by " + user.GetAccountName() +
                         ". If this information is correct, please re-enter the account number: ");
                     var confirmed_account_number = Convert.ToInt32(Console.ReadLine());
 
-                    if(confirmed_account_number == input_account_number)
+                    if (confirmed_account_number == input_account_number)
                     {
                         var conn = Connect();
 
@@ -188,10 +196,10 @@ namespace ATM
                 var input_account_number = Convert.ToInt32(Console.ReadLine());
                 User user = RetrieveAccountByNumber(input_account_number);
 
-                Console.WriteLine("You wish to update the account held by " + user.GetAccountName() + 
+                Console.WriteLine("You wish to update the account held by " + user.GetAccountName() +
                         ".");
 
-                if(user == null)
+                if (user == null)
                 {
                     Console.WriteLine("Account with that number not found...");
                 }
@@ -240,10 +248,18 @@ namespace ATM
                         case "4":
                             Console.WriteLine("Enter new account pin: ");
                             var pin = Console.ReadLine();
-                            cmd.CommandText = "update atm.users set pin = @pin where account_number = @account_number";
-                            cmd.Parameters.AddWithValue("@pin", pin);
-                            cmd.Parameters.AddWithValue("@account_number", user.GetAccountNumber());
-                            cmd.ExecuteNonQuery();
+
+                            if (pin.Length != 5)
+                            {
+                                Console.WriteLine("Pin is not 5 digits and is invalid...");
+                            }
+                            else
+                            {
+                                cmd.CommandText = "update atm.users set pin = @pin where account_number = @account_number";
+                                cmd.Parameters.AddWithValue("@pin", pin);
+                                cmd.Parameters.AddWithValue("@account_number", user.GetAccountNumber());
+                                cmd.ExecuteNonQuery();
+                            }
                             break;
                         default:
                             Console.WriteLine("Invalid input...");
@@ -258,7 +274,7 @@ namespace ATM
                 var input_account_number = Convert.ToInt32(Console.ReadLine());
                 User user = RetrieveAccountByNumber(input_account_number);
 
-                if(user == null)
+                if (user == null)
                 {
                     Console.WriteLine("Account with that number not found...");
                 }
@@ -287,9 +303,9 @@ namespace ATM
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandText = "select * from atm.users where account_number = @account_number";
                 cmd.Parameters.AddWithValue("@account_number", account_number);
-    
+
                 var reader = cmd.ExecuteReader();
-                while(reader.Read())
+                while (reader.Read())
                 {
                     string db_login = reader["login"].ToString();
                     int db_pin = Convert.ToInt32(reader["pin"]);
@@ -297,8 +313,8 @@ namespace ATM
                     double db_balance = Convert.ToDouble(reader["balance"]);
                     int db_account_number = Convert.ToInt32(reader["account_number"]);
                     string db_status = reader["status"].ToString();
-    
-                    if(db_name == "Admin")
+
+                    if (db_name == "Admin")
                     {
                         Admin user = new Admin(db_login, db_pin, db_name, db_balance, db_account_number, db_status);
                         return user;
@@ -308,14 +324,14 @@ namespace ATM
                         Customer user = new Customer(db_login, db_pin, db_name, db_balance, db_account_number, db_status);
                         return user;
                     }
-    
+
                     Console.WriteLine(db_login);
                     Console.WriteLine(db_pin);
                     Console.WriteLine(db_name);
                     Console.WriteLine(db_balance);
                     Console.WriteLine(db_account_number);
                 }
-    
+
                 Console.WriteLine("Found no account matching those credentials...");
                 return null;
             }
@@ -323,8 +339,9 @@ namespace ATM
 
         class Customer : User
         {
-            public Customer(string input_login, int input_pin, string input_name, double input_balance, int input_account_number, string input_status) : 
-            base(input_login, input_pin, input_name, input_balance, input_account_number, input_status){}
+            public Customer(string input_login, int input_pin, string input_name, double input_balance, int input_account_number, string input_status) :
+            base(input_login, input_pin, input_name, input_balance, input_account_number, input_status)
+            { }
             public override void DisplayMenu()
             {
                 Console.WriteLine("1----Withdraw Cash");
@@ -358,7 +375,7 @@ namespace ATM
                 Console.Write("Enter the amount you would like to withdraw: ");
                 var withdraw_amount = Convert.ToDouble(Console.ReadLine());
 
-                if(this.GetAccountBalance() - withdraw_amount >= 0)
+                if (this.GetAccountBalance() - withdraw_amount >= 0)
                 {
 
                     var conn = Connect();
@@ -382,7 +399,7 @@ namespace ATM
                 }
                 else
                 {
-                    Console.WriteLine("Invalid withdraw of " + withdraw_amount + ", your balance is " + 
+                    Console.WriteLine("Invalid withdraw of " + withdraw_amount + ", your balance is " +
                         this.GetAccountBalance());
                 }
             }
@@ -417,7 +434,7 @@ namespace ATM
                 Console.WriteLine("Account #  " + this.GetAccountNumber());
                 Console.WriteLine("Date:      " + DateTime.Now.ToString("MM/dd/yyyy"));
                 Console.WriteLine("Balance:   " + this.GetAccountBalance());
-            }         
+            }
         }
 
         private static void Main()
@@ -427,20 +444,27 @@ namespace ATM
             var input_pin = "";
             int pin;
             User user = null;
-            while(user == null)
+            while (user == null)
             {
                 Console.Write("Input login: ");
                 login = Console.ReadLine();
                 Console.Write("Input pin: ");
                 input_pin = Console.ReadLine();
-                if(!Int32.TryParse(input_pin, out pin))
+                if (!Int32.TryParse(input_pin, out pin))
                 {
                     Console.WriteLine("Input pin was not a number...");
                 }
-                user = Login(login, pin);
+                else if (input_pin.Length != 5)
+                {
+                    Console.WriteLine("Pin is not 5 digits and is invalid...");
+                }
+                else
+                {
+                    user = Login(login, pin);
+                }
             }
 
-            while(true)
+            while (true)
             {
                 user.DisplayMenu();
             }
@@ -472,7 +496,7 @@ namespace ATM
             cmd.Parameters.AddWithValue("@pin", pin);
 
             var reader = cmd.ExecuteReader();
-            while(reader.Read())
+            while (reader.Read())
             {
                 string db_login = reader["login"].ToString();
                 int db_pin = Convert.ToInt32(reader["pin"]);
@@ -481,7 +505,7 @@ namespace ATM
                 int db_account_number = Convert.ToInt32(reader["account_number"]);
                 string db_status = reader["status"].ToString();
 
-                if(db_name == "Admin")
+                if (db_name == "Admin")
                 {
                     Admin user = new Admin(db_login, db_pin, db_name, db_balance, db_account_number, db_status);
                     return user;
