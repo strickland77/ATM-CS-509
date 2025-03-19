@@ -34,3 +34,4 @@ C:\Users\stric\OneDrive\Desktop\CS509\atm\obj\Debug\net9.0\refint\atm.dll
 C:\Users\stric\OneDrive\Desktop\CS509\atm\obj\Debug\net9.0\atm.pdb
 C:\Users\stric\OneDrive\Desktop\CS509\atm\obj\Debug\net9.0\atm.genruntimeconfig.cache
 C:\Users\stric\OneDrive\Desktop\CS509\atm\obj\Debug\net9.0\ref\atm.dll
+C:\Users\stric\OneDrive\Desktop\CS509\atm\obj\Debug\net9.0\atm.sourcelink.json
