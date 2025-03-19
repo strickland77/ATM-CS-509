@@ -107,7 +107,7 @@ namespace ATM
                 }
             }
 
-            public void CreateAccount()
+            private void CreateAccount()
             {
                 Console.Write("Input new account login: ");
                 var input_login = Console.ReadLine();
@@ -137,15 +137,15 @@ namespace ATM
                 if(rows > 0)
                 {
                     User new_account = RetrieveAccountByLogin(input_login, Convert.ToInt32(input_pin));
-                    Console.Write("Account Successfully Created - the account number assigned is: " + new_account.GetAccountNumber());
+                    Console.WriteLine("Account Successfully Created - the account number assigned is: " + new_account.GetAccountNumber());
                 }
                 else
                 {
-                    Console.Write("New account creation failed...");
+                    Console.WriteLine("New account creation failed...");
                 }
             }
 
-            public void DeleteAccount()
+            private void DeleteAccount()
             {
                 Console.Write("Enter the account number to which you want to delete: ");
                 var input_account_number = Convert.ToInt32(Console.ReadLine());
@@ -153,7 +153,7 @@ namespace ATM
 
                 if(user == null)
                 {
-                    Console.Write("Account with that number not found...");
+                    Console.WriteLine("Account with that number not found...");
                 }
                 else
                 {
@@ -173,28 +173,27 @@ namespace ATM
                         cmd.Parameters.AddWithValue("@account_number", confirmed_account_number);
 
                         var rows = cmd.ExecuteNonQuery();
-                        Console.Write(rows);
-                        Console.Write("Account Deleted Successfully");
+                        Console.WriteLine("Account Deleted Successfully");
                     }
                     else
                     {
-                        Console.Write("Re-entered account number did not match...");
+                        Console.WriteLine("Re-entered account number did not match...");
                     }
                 }
             }
 
-            public void UpdateAccount()
+            private void UpdateAccount()
             {
                 Console.Write("Enter the account number to which you want to update: ");
                 var input_account_number = Convert.ToInt32(Console.ReadLine());
                 User user = RetrieveAccountByNumber(input_account_number);
 
-                Console.Write("You wish to update the account held by " + user.GetAccountName() + 
+                Console.WriteLine("You wish to update the account held by " + user.GetAccountName() + 
                         ".");
 
                 if(user == null)
                 {
-                    Console.Write("Account with that number not found...");
+                    Console.WriteLine("Account with that number not found...");
                 }
                 else
                 {
@@ -253,7 +252,7 @@ namespace ATM
                 }
             }
 
-            public void SearchAccount()
+            private void SearchAccount()
             {
                 Console.Write("Enter the account number to which you want to search: ");
                 var input_account_number = Convert.ToInt32(Console.ReadLine());
@@ -261,7 +260,7 @@ namespace ATM
 
                 if(user == null)
                 {
-                    Console.Write("Account with that number not found...");
+                    Console.WriteLine("Account with that number not found...");
                 }
                 else
                 {
@@ -274,12 +273,12 @@ namespace ATM
                 }
             }
 
-            public User RetrieveAccountByLogin(string login, int pin)
+            private User RetrieveAccountByLogin(string login, int pin)
             {
                 return Login(login, pin);
             }
 
-            public User RetrieveAccountByNumber(int account_number)
+            private User RetrieveAccountByNumber(int account_number)
             {
                 var conn = Connect();
 
@@ -354,7 +353,7 @@ namespace ATM
                 }
             }
 
-            public void WithdrawCash()
+            private void WithdrawCash()
             {
                 Console.Write("Enter the amount you would like to withdraw: ");
                 var withdraw_amount = Convert.ToDouble(Console.ReadLine());
@@ -388,7 +387,7 @@ namespace ATM
                 }
             }
 
-            public void DepositCash()
+            private void DepositCash()
             {
                 Console.Write("Enter the amount you would like to deposit: ");
                 var deposit_amount = Convert.ToDouble(Console.ReadLine());
@@ -413,7 +412,7 @@ namespace ATM
                 Console.WriteLine("Balance:   " + this.GetAccountBalance());
             }
 
-            public void DisplayBalance()
+            private void DisplayBalance()
             {
                 Console.WriteLine("Account #  " + this.GetAccountNumber());
                 Console.WriteLine("Date:      " + DateTime.Now.ToString("MM/dd/yyyy"));
